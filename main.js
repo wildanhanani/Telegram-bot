@@ -10,54 +10,54 @@ const { leave } = Stage;
 const dotenv = require('dotenv');
 
 dotenv.config();
+
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const date = new Date().setHours(0, 0, 0, 0);
 bot.use(Telegraf.log());
 
-bot.command('start', ({ reply }) => {
-  reply(
+bot.start((ctx) =>
+  ctx.reply(
     'Welcome to Info Data Covid-19',
     Markup.keyboard(['/help']).oneTime().resize().extra()
-  );
-});
+  )
+);
+// bot.on('message', (ctx) => ctx.reply('/start'));
 const helpMessage = `BOT DATA COVID
-/country : untuk mencari info Covid-19 berdasarkan negara, langsung ketikan nama negaranya \n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
+/country : untuk melihat info Covid-19 di Indonesia \n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
 bot.help((ctx) => {
   ctx.reply(helpMessage);
 });
 
 const country = new Scene('country');
-country.enter((ctx) => ctx.reply('Please input name of country : '));
-country.leave((ctx) =>
-  ctx.reply('Bye', Markup.keyboard(['/help']).oneTime().resize().extra())
-);
-country.hears(/cancel/gi, leave());
-country.on('text', async (ctx) => {
+country.enter(async (ctx) => {
   try {
-    const country = ctx.message.text;
-    const replay = ctx.reply(`Looking for ${country}...`);
-    if (replay) {
-      const { data } = await axios.get(
-        `https://api.covid19api.com/country/${country}?from=2020-09-27T00:00:00Z&to=${date}`
-      );
-      ctx.reply(
-        'Result: \nNegara: ' +
-          data[0].Country +
-          '\nPositif Corona: ' +
-          data[0].Confirmed +
-          '\nMeninggal: ' +
-          data[0].Deaths +
-          '\nSembuh: ' +
-          data[0].Recovered +
-          '\nDirawat: ' +
-          data[0].Active
-      );
-      ctx.reply('input cancel or click /cancel for exit');
-    }
+    const { data } = await axios.get(
+      `https://api.covid19api.com/country/indonesia?from=2020-09-28T00:00:00Z&to=${date}`
+    );
+    await ctx.reply(
+      'Result: \nNegara: ' +
+        data[0].Country +
+        '\nPositif Corona: ' +
+        data[0].Confirmed +
+        '\nMeninggal: ' +
+        data[0].Deaths +
+        '\nSembuh: ' +
+        data[0].Recovered +
+        '\nDirawat: ' +
+        data[0].Active
+    );
+    ctx.reply('input cancel or click /cancel for exit');
   } catch (error) {
     console.log(error);
   }
 });
+country.leave((ctx) =>
+  ctx.reply(
+    'Untuk info lainya silahkan click tombol help yang sudah disediakan',
+    Markup.keyboard(['/help']).oneTime().resize().extra()
+  )
+);
+country.hears(/cancel/gi, leave());
 
 const provinsi = new Scene('provinsi');
 provinsi.enter(async (ctx) => {
@@ -66,15 +66,14 @@ provinsi.enter(async (ctx) => {
       `https://api.kawalcorona.com/indonesia/provinsi`
     );
     const dataProvinsi = data;
-    const A = [];
-    let B = [];
+    const loop = [];
     dataProvinsi.map((val) => {
-      A.push(val.attributes.Provinsi);
+      loop.push(val.attributes.Provinsi);
     });
     const result = [];
     const size = 3;
-    for (var i = 0; i <= A.length; i += size) {
-      result.push(A.slice(i, i + size));
+    for (var i = 0; i <= loop.length; i += size) {
+      result.push(loop.slice(i, i + size));
     }
     await ctx.reply(
       'Please Choose one province',
@@ -82,8 +81,14 @@ provinsi.enter(async (ctx) => {
     );
     provinsi.on('text', async (ctx) => {
       const input = ctx.update.message.text;
-      const array = input.split('_');
-      const provinsi = data.find((val) => val.attributes.Provinsi == array[0]);
+      reply_markup: JSON.stringify({
+        remove_keyboard: true,
+      });
+      const provinsi = data.find((val) => val.attributes.Provinsi);
+      const found = data.some((val) => val.attributes.Provinsi == input);
+      if (!found) {
+        return ctx.reply('Sory, please choose in markup keyboard');
+      }
       await ctx.reply(
         `Data Covid Provinsi:\nProvinsi: ${provinsi.attributes.Provinsi}\nPositif: ${provinsi.attributes.Kasus_Posi}\nSembuh: ${provinsi.attributes.Kasus_Semb}\nMeninggal: ${provinsi.attributes.Kasus_Meni}`
       );
@@ -94,7 +99,10 @@ provinsi.enter(async (ctx) => {
   }
 });
 provinsi.leave((ctx) =>
-  ctx.reply('Bye', Markup.keyboard(['/help']).oneTime().resize().extra())
+  ctx.reply(
+    'Untuk info lainya silahkan click tombol help yang sudah disediakan',
+    Markup.keyboard(['/help']).oneTime().resize().extra()
+  )
 );
 provinsi.hears(/cancel/gi, leave());
 
