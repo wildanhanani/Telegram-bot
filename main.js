@@ -20,7 +20,6 @@ bot.start((ctx) =>
     Markup.keyboard(['/help']).oneTime().resize().extra()
   )
 );
-// bot.on('message', (ctx) => ctx.reply('/start'));
 const helpMessage = `BOT DATA COVID
 /country :  untuk melihat info Covid-19 di Indonesia \n\n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
 bot.help((ctx) => {
