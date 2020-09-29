@@ -21,7 +21,7 @@ bot.command('start', ({ reply }) => {
   );
 });
 const helpMessage = `BOT DATA COVID
-/country : untuk mencari info Covid-19 berdasarkan negara \n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
+/country : untuk mencari info Covid-19 berdasarkan negara, langsung ketikan nama negaranya \n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
 bot.help((ctx) => {
   ctx.reply(helpMessage);
 });
