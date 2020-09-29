@@ -42,14 +42,14 @@ country.enter(async (ctx) => {
         '\nDirawat: ' +
         data[0].dirawat
     );
-    ctx.reply('silahkan ketik cancel atau click /cancel for exit');
+    ctx.reply('silahkan ketik cancel atau klik /cancel for exit');
   } catch (error) {
     console.log(error);
   }
 });
 country.leave((ctx) =>
   ctx.reply(
-    'Untuk info lainya silahkan click tombol help yang sudah disediakan',
+    'Untuk info lainya silahkan klik tombol help yang sudah disediakan',
     Markup.keyboard(['/help']).oneTime().resize().extra()
   )
 );
@@ -72,7 +72,7 @@ provinsi.enter(async (ctx) => {
       result.push(loop.slice(i, i + size));
     }
     await ctx.reply(
-      'Please Choose one province',
+      'Silahkan pilih provinsi yang akan di cari infonya',
       Markup.keyboard(result).oneTime().resize().extra()
     );
     provinsi.on('text', async (ctx) => {
@@ -80,12 +80,12 @@ provinsi.enter(async (ctx) => {
       const provinsi = data.find((val) => val.attributes.Provinsi);
       const found = data.some((val) => val.attributes.Provinsi == input);
       if (!found) {
-        return ctx.reply('Sory, please choose in markup keyboard');
+        return ctx.reply('Maaf, silahkan pilih tombol yang sudah disediakan');
       }
       await ctx.reply(
         `Data Covid Provinsi:\nProvinsi: ${provinsi.attributes.Provinsi}\nPositif: ${provinsi.attributes.Kasus_Posi}\nSembuh: ${provinsi.attributes.Kasus_Semb}\nMeninggal: ${provinsi.attributes.Kasus_Meni}`
       );
-      ctx.reply('input cancel or click /cancel for exit');
+      ctx.reply('ketik cancel atau klik /cancel untuk exit');
     });
   } catch (error) {
     console.log(error);
@@ -93,7 +93,7 @@ provinsi.enter(async (ctx) => {
 });
 provinsi.leave((ctx) =>
   ctx.reply(
-    'Untuk info lainya silahkan click tombol help yang sudah disediakan',
+    'Untuk info lainya silahkan klik tombol help yang sudah disediakan',
     Markup.keyboard(['/help']).oneTime().resize().extra()
   )
 );
