@@ -12,18 +12,17 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
-const date = new Date().setHours(0, 0, 0, 0);
 bot.use(Telegraf.log());
 
 bot.start((ctx) =>
   ctx.reply(
-    'Welcome to Info Data Covid-19',
+    'Selamat datang di Info Data Covid-19',
     Markup.keyboard(['/help']).oneTime().resize().extra()
   )
 );
 // bot.on('message', (ctx) => ctx.reply('/start'));
 const helpMessage = `BOT DATA COVID
-/country : untuk melihat info Covid-19 di Indonesia \n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
+/country :  untuk melihat info Covid-19 di Indonesia \n\n/provinsi : untuk mencari info Covid-19 berdasarkan provinsi di Indonesia`;
 bot.help((ctx) => {
   ctx.reply(helpMessage);
 });
@@ -31,22 +30,20 @@ bot.help((ctx) => {
 const country = new Scene('country');
 country.enter(async (ctx) => {
   try {
-    const { data } = await axios.get(
-      `https://api.covid19api.com/country/indonesia?from=2020-09-28T00:00:00Z&to=${date}`
-    );
+    const { data } = await axios.get(`https://api.kawalcorona.com/indonesia`);
     await ctx.reply(
-      'Result: \nNegara: ' +
-        data[0].Country +
-        '\nPositif Corona: ' +
-        data[0].Confirmed +
-        '\nMeninggal: ' +
-        data[0].Deaths +
+      'Result: \nNegara : ' +
+        data[0].name +
+        '\nPositif Corona : ' +
+        data[0].positif +
+        '\nMeninggal : ' +
+        data[0].meninggal +
         '\nSembuh: ' +
-        data[0].Recovered +
+        data[0].sembuh +
         '\nDirawat: ' +
-        data[0].Active
+        data[0].dirawat
     );
-    ctx.reply('input cancel or click /cancel for exit');
+    ctx.reply('silahkan ketik cancel atau click /cancel for exit');
   } catch (error) {
     console.log(error);
   }
@@ -81,9 +78,6 @@ provinsi.enter(async (ctx) => {
     );
     provinsi.on('text', async (ctx) => {
       const input = ctx.update.message.text;
-      reply_markup: JSON.stringify({
-        remove_keyboard: true,
-      });
       const provinsi = data.find((val) => val.attributes.Provinsi);
       const found = data.some((val) => val.attributes.Provinsi == input);
       if (!found) {
@@ -118,4 +112,8 @@ bot.use(session());
 bot.use(stage.middleware());
 bot.command('country', (ctx) => ctx.scene.enter('country'));
 bot.command('provinsi', (ctx) => ctx.scene.enter('provinsi'));
+bot.on('text', (ctx, next) => {
+  ctx.reply('Hallo, silahkan klik tombol /help untuk informasi yang lainya');
+  return next();
+});
 bot.startPolling();
