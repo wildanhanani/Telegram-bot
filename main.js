@@ -1,5 +1,6 @@
 const Telegraf = require('telegraf');
 const axios = require('axios');
+const express = require('express');
 const session = require('telegraf/session');
 const Stage = require('telegraf/stage');
 const Scene = require('telegraf/scenes/base');
@@ -7,6 +8,8 @@ const Extra = require('telegraf/extra');
 const Markup = require('telegraf/markup');
 const { leave } = Stage;
 
+const app = express();
+const PORT = process.env.PORT || 5000;
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -115,4 +118,6 @@ bot.on('text', (ctx, next) => {
   ctx.reply('Hallo, silahkan klik tombol /help untuk informasi yang lainya');
   return next();
 });
+
 bot.startPolling();
+app.listen(PORT, () => console.log(`app listen in port ${PORT}`));
