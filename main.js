@@ -74,13 +74,14 @@ provinsi.enter(async (ctx) => {
     for (var i = 0; i <= loop.length; i += size) {
       result.push(loop.slice(i, i + size));
     }
+    console.log(result);
     await ctx.reply(
       'Silahkan pilih provinsi yang akan di cari infonya',
       Markup.keyboard(result).oneTime().resize().extra()
     );
     provinsi.on('text', async (ctx) => {
       const input = ctx.update.message.text;
-      const provinsi = data.find((val) => val.attributes.Provinsi);
+      const provinsi = data.find((val) => val.attributes.Provinsi == input);
       const found = data.some((val) => val.attributes.Provinsi == input);
       if (!found) {
         return ctx.reply('Maaf, silahkan pilih tombol yang sudah disediakan');
