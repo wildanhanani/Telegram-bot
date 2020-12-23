@@ -1,6 +1,7 @@
 const Telegraf = require('telegraf');
 const axios = require('axios');
 const express = require('express');
+const cron = require('node-cron');
 const session = require('telegraf/session');
 const Stage = require('telegraf/stage');
 const Scene = require('telegraf/scenes/base');
@@ -13,6 +14,27 @@ const PORT = process.env.PORT || 5000;
 const dotenv = require('dotenv');
 
 dotenv.config();
+
+cron.schedule('*/5 * * * *', () => {
+  console.log('running a system');
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      status: 200,
+      message: 'system bot covid up and running',
+      environment: process.env.NODE_ENV,
+      timestamp: new Date(),
+    });
+  });
+});
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 200,
+    message: 'system bot covid up and running',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date(),
+  });
+});
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(Telegraf.log());
